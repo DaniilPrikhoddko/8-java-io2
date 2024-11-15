@@ -1,7 +1,9 @@
 package com.example.task01;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 public class Task01Main {
     public static void main(String[] args) throws IOException, InterruptedException {
@@ -14,7 +16,19 @@ public class Task01Main {
     }
 
     public static String extractSoundName(File file) throws IOException, InterruptedException {
-        // your implementation here
-        return "sound name";
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        processBuilder.command("cmd.exe", "/c", "ffprobe -v error -of flat -show_format " + "\"" + file.getAbsolutePath() + "\"");
+        processBuilder.directory(new File("C:\\Users\\Daniill\\Downloads\\ffmpeg-2024-11-06-git-4047b887fc-full_build\\ffmpeg-2024-11-06-git-4047b887fc-full_build\\bin"));
+        Process process = processBuilder.start();
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+            String str = "";
+            while ((str = reader.readLine()) != null) {
+                if (str.contains("title")) {
+                    return str.split("\"")[1];
+                }
+            }
+        }
+        return null;
     }
 }
